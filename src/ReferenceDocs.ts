@@ -11,19 +11,18 @@ import {
   Schema,
 } from "effect"
 import fuzzysort from "fuzzysort"
+import Minisearch from "minisearch"
 import * as Prettier from "prettier"
 
 const docUrls = [
   "https://raw.githubusercontent.com/tim-smart/effect-io-ai/refs/heads/main/json/_all.json",
 ]
-const documentId = Schema.String.annotations({
+const documentId = Schema.Number.annotations({
   description: "The unique identifier for the Effect documentation entry.",
 })
 
 const SearchResult = Schema.Struct({
-  documentId: Schema.String.annotations({
-    description: "The unique identifier for the Effect documentation entry.",
-  }),
+  documentId,
   label: Schema.String,
 }).annotations({
   description: "A search result from the Effect reference documentation.",
@@ -40,12 +39,17 @@ const toolkit = AiToolkit.make(
       }),
     },
     success: Schema.Array(SearchResult),
-  }),
+  })
+    .annotate(AiTool.Readonly, true)
+    .annotate(AiTool.Destructive, false),
+
   AiTool.make("get_effect_doc", {
     description: "Get the Effect documentation for a given document ID.",
     parameters: { documentId },
     success: Schema.String,
-  }),
+  })
+    .annotate(AiTool.Readonly, true)
+    .annotate(AiTool.Destructive, false),
 )
 
 const ToolkitLayer = toolkit
@@ -66,38 +70,36 @@ const ToolkitLayer = toolkit
         Effect.forEach(docUrls, loadDocs, {
           concurrency: docUrls.length,
         }).pipe(
-          Effect.map((_) =>
-            _.flat().reduce(
-              (acc, entry, i) => {
-                acc[i] = entry
-                return acc
-              },
-              {} as Record<string, DocEntry>,
-            ),
-          ),
-          Effect.map((map) => ({
-            forSearch: Object.entries(map).map(([key, entry]) => ({
-              term: entry.preparedFuzzySearch,
-              key,
-              label: entry.nameWithModule,
-              entry,
-            })),
-            map,
-          })),
+          Effect.map((_) => _.flat()),
+          Effect.map((entries) => {
+            const minisearch = new Minisearch<{
+              id: number
+              nameWithModule: string
+              description: string
+            }>({
+              fields: ["nameWithModule", "description"],
+            })
+            minisearch.addAll(
+              entries.map((entry, id) => ({
+                id,
+                nameWithModule: entry.nameWithModule,
+                description: Option.getOrElse(entry.description, () => ""),
+              })),
+            )
+            return { minisearch, entries }
+          }),
         ),
         Schedule.spaced(Duration.hours(3)),
       )
 
       const search = (query: string) => {
         query = query.toLowerCase()
-        return Effect.logDebug("searching").pipe(
-          Effect.zipRight(Resource.get(docs)),
-          Effect.map(({ forSearch }) =>
-            query
-              .split(/\s+/)
-              .flatMap((q) =>
-                fuzzysort.go(q, forSearch, { key: "term" }).map((x) => x.obj),
-              ),
+        return Resource.get(docs).pipe(
+          Effect.map(({ minisearch, entries }) =>
+            minisearch.search(query).map((result) => ({
+              id: Number(result.id),
+              entry: entries[result.id],
+            })),
           ),
           Effect.annotateLogs("module", "ReferenceDocs"),
           Effect.annotateLogs("query", query),
@@ -108,13 +110,13 @@ const ToolkitLayer = toolkit
         effect_doc_search: Effect.fn(function* ({ query }) {
           const results = yield* Effect.orDie(search(query))
           return results.map((result) => ({
-            documentId: String(result.key),
-            label: result.label,
+            documentId: result.id,
+            label: result.entry.nameWithModule,
           }))
         }),
         get_effect_doc: Effect.fn(function* ({ documentId }) {
           const doc = yield* Resource.get(docs).pipe(
-            Effect.map((_) => _.map[documentId]),
+            Effect.map((_) => _.entries[documentId]),
             Effect.orDie,
           )
           return yield* doc.asMarkdown

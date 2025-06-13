@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@effect/ai':
-        specifier: ^0.18.15
-        version: 0.18.15(@effect/experimental@0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(@effect/platform@0.84.11(effect@3.16.7))(@effect/rpc@0.61.15(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(effect@3.16.7)
+        specifier: ^0.18.16
+        version: 0.18.16(@effect/experimental@0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(@effect/platform@0.84.11(effect@3.16.7))(@effect/rpc@0.61.15(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(effect@3.16.7)
       '@effect/language-service':
         specifier: ^0.20.1
         version: 0.20.1
@@ -23,12 +23,9 @@ importers:
       effect:
         specifier: ^3.16.7
         version: 3.16.7
-      fuzzysearch:
-        specifier: ^1.0.3
-        version: 1.0.3
-      fuzzysort:
-        specifier: ^3.1.0
-        version: 3.1.0
+      minisearch:
+        specifier: ^7.1.2
+        version: 7.1.2
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -44,8 +41,8 @@ importers:
 
 packages:
 
-  '@effect/ai@0.18.15':
-    resolution: {integrity: sha512-2YWe/xSM+mz8ib18bwJuR8MeTgRLEZb1MVV3IErbhrWX/FaQE50nwAtH3lEzThybaPq8s/mw9C3lo2FvV0QVRg==}
+  '@effect/ai@0.18.16':
+    resolution: {integrity: sha512-m37hhRyWWK0G9TPC1YcopbiZ31GAzrmIrN+A/E8FWKjcv2f1jXdLorbCHd+hzQ/KN5MSTZRvZi8/F5M5QPfxaw==}
     peerDependencies:
       '@effect/experimental': ^0.48.12
       '@effect/platform': ^0.84.11
@@ -654,12 +651,6 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  fuzzysearch@1.0.3:
-    resolution: {integrity: sha512-s+kNWQuI3mo9OALw0HJ6YGmMbLqEufCh2nX/zzV5CrICQ/y4AwPxM+6TIiF9ItFCHXFCyM/BfCCmN57NTIJuPg==}
-
-  fuzzysort@3.1.0:
-    resolution: {integrity: sha512-sR9BNCjBg6LNgwvxlBd0sBABvQitkLzoVY9MYYROQVX/FvfJ4Mai9LsGhDgd8qYdds0bY77VzYd5iuB+v5rwQQ==}
-
   get-tsconfig@4.10.1:
     resolution: {integrity: sha512-auHyJ4AgMz7vgS8Hp3N6HXSmlMdUyhSUrfBF16w153rxtLIEOE+HGqaBppczZvnHLqQJfiHotCYpNhl0lUROFQ==}
 
@@ -729,6 +720,9 @@ packages:
   minipass@7.1.2:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
+
+  minisearch@7.1.2:
+    resolution: {integrity: sha512-R1Pd9eF+MD5JYDDSPAp/q1ougKglm14uEkPMvQ/05RGmx6G9wvmLTrTI/Q5iPNJLYqNdsDQ7qTGIcNWR+FrHmA==}
 
   mlly@1.7.4:
     resolution: {integrity: sha512-qmdSIPC4bDJXgZTCR7XosJiNKySV7O215tsPtDN9iEO/7q/76b/ijtgRu/+epFXSJhijtTCCGp3DWS549P3xKw==}
@@ -976,7 +970,7 @@ packages:
 
 snapshots:
 
-  '@effect/ai@0.18.15(@effect/experimental@0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(@effect/platform@0.84.11(effect@3.16.7))(@effect/rpc@0.61.15(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(effect@3.16.7)':
+  '@effect/ai@0.18.16(@effect/experimental@0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(@effect/platform@0.84.11(effect@3.16.7))(@effect/rpc@0.61.15(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(effect@3.16.7)':
     dependencies:
       '@effect/experimental': 0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7)
       '@effect/platform': 0.84.11(effect@3.16.7)
@@ -1432,10 +1426,6 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  fuzzysearch@1.0.3: {}
-
-  fuzzysort@3.1.0: {}
-
   get-tsconfig@4.10.1:
     dependencies:
       resolve-pkg-maps: 1.0.0
@@ -1495,6 +1485,8 @@ snapshots:
       brace-expansion: 2.0.2
 
   minipass@7.1.2: {}
+
+  minisearch@7.1.2: {}
 
   mlly@1.7.4:
     dependencies:

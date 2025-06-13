@@ -6,13 +6,12 @@
     "dev": "tsx --watch src/main.ts"
   },
   "devDependencies": {
-    "@effect/ai": "^0.18.15",
+    "@effect/ai": "^0.18.16",
     "@effect/language-service": "^0.20.1",
     "@effect/platform": "^0.84.11",
     "@effect/platform-node": "^0.85.16",
     "effect": "^3.16.7",
-    "fuzzysearch": "^1.0.3",
-    "fuzzysort": "^3.1.0",
+    "minisearch": "^7.1.2",
     "prettier": "^3.5.3",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
