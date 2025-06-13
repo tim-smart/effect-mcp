@@ -14,8 +14,7 @@
     "target": "ESNext",
     "incremental": true,
     "plugins": [{ "name": "@effect/language-service" }],
-    "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
-    "types": ["bun-types"]
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "include": ["src/**/*"]
 }
