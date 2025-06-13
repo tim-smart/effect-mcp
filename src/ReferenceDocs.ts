@@ -34,7 +34,7 @@ const toolkit = AiToolkit.make(
     parameters: {
       query: Schema.String.annotations({
         description:
-          "The search query to look for in the module documentation, e.g. `Effect.map` or `Stream.flatMap`.",
+          "The search query to look for in the documentation, e.g. `Effect.map` or `Stream.flatMap`.",
       }),
     },
     success: Schema.Array(SearchResult),
@@ -43,7 +43,7 @@ const toolkit = AiToolkit.make(
     .annotate(AiTool.Destructive, false),
 
   AiTool.make("get_effect_doc", {
-    description: "Get the Effect documentation for a given document ID.",
+    description: "Get the Effect documentation for a documentId.",
     parameters: { documentId },
     success: Schema.String,
   })
