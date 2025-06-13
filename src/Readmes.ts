@@ -54,4 +54,4 @@ export const Readmes = Layer.mergeAll(
   PlatformReadme,
   RpcReadme,
   SqlReadme,
-).pipe(Layer.provide([McpServer.McpServer.layer, NodeHttpClient.layerUndici]))
+).pipe(Layer.provide(NodeHttpClient.layerUndici))

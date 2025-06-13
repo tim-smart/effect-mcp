@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@effect/ai':
-        specifier: ^0.18.14
-        version: 0.18.14(@effect/experimental@0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(@effect/platform@0.84.11(effect@3.16.7))(@effect/rpc@0.61.15(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(effect@3.16.7)
+        specifier: ^0.18.15
+        version: 0.18.15(@effect/experimental@0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(@effect/platform@0.84.11(effect@3.16.7))(@effect/rpc@0.61.15(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(effect@3.16.7)
       '@effect/language-service':
         specifier: ^0.20.1
         version: 0.20.1
@@ -44,8 +44,8 @@ importers:
 
 packages:
 
-  '@effect/ai@0.18.14':
-    resolution: {integrity: sha512-tOMH8/Wn9WmJskLRlUM+4mSHUyWpGkzmqJ7YVxweb2S6nVkj0eao/ISk58SPO8yTvFKTVSFAHkvD0JAwHShUsw==}
+  '@effect/ai@0.18.15':
+    resolution: {integrity: sha512-2YWe/xSM+mz8ib18bwJuR8MeTgRLEZb1MVV3IErbhrWX/FaQE50nwAtH3lEzThybaPq8s/mw9C3lo2FvV0QVRg==}
     peerDependencies:
       '@effect/experimental': ^0.48.12
       '@effect/platform': ^0.84.11
@@ -976,7 +976,7 @@ packages:
 
 snapshots:
 
-  '@effect/ai@0.18.14(@effect/experimental@0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(@effect/platform@0.84.11(effect@3.16.7))(@effect/rpc@0.61.15(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(effect@3.16.7)':
+  '@effect/ai@0.18.15(@effect/experimental@0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(@effect/platform@0.84.11(effect@3.16.7))(@effect/rpc@0.61.15(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7))(effect@3.16.7)':
     dependencies:
       '@effect/experimental': 0.48.12(@effect/platform@0.84.11(effect@3.16.7))(effect@3.16.7)
       '@effect/platform': 0.84.11(effect@3.16.7)

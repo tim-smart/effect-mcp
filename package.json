@@ -6,7 +6,7 @@
     "dev": "tsx --watch src/main.ts"
   },
   "devDependencies": {
-    "@effect/ai": "^0.18.14",
+    "@effect/ai": "^0.18.15",
     "@effect/language-service": "^0.20.1",
     "@effect/platform": "^0.84.11",
     "@effect/platform-node": "^0.85.16",
