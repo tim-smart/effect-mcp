@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "allowSyntheticDefaultImports": true,
+    "noErrorTruncation": true,
+    "lib": ["ESNext", "DOM"],
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "ESNext",
+    "incremental": true,
+    "plugins": [{ "name": "@effect/language-service" }],
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
+    "types": ["bun-types"]
+  },
+  "include": ["src/**/*"]
+}
