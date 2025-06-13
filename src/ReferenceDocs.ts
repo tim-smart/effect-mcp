@@ -93,7 +93,11 @@ const ToolkitLayer = toolkit
         return Effect.logDebug("searching").pipe(
           Effect.zipRight(Resource.get(docs)),
           Effect.map(({ forSearch }) =>
-            fuzzysort.go(query, forSearch, { key: "term" }).map((x) => x.obj),
+            query
+              .split(/\s+/)
+              .flatMap((q) =>
+                fuzzysort.go(q, forSearch, { key: "term" }).map((x) => x.obj),
+              ),
           ),
           Effect.annotateLogs("module", "ReferenceDocs"),
           Effect.annotateLogs("query", query),
