@@ -10,7 +10,6 @@ import {
   Schedule,
   Schema,
 } from "effect"
-import fuzzysort from "fuzzysort"
 import Minisearch from "minisearch"
 import * as Prettier from "prettier"
 
@@ -183,10 +182,6 @@ class DocEntry extends Schema.Class<DocEntry>("DocEntry")({
   get searchTerm(): string {
     return `/${this.project}/${this.moduleTitle}.${this.name}.${this._tag}`
   }
-
-  readonly preparedFuzzySearch = fuzzysort.prepare(
-    `${this.moduleTitle}.${this.name}`,
-  )
 
   get asMarkdown(): Effect.Effect<string> {
     return Effect.gen(this, function* () {
