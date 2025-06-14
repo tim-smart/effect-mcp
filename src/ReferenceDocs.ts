@@ -2,16 +2,20 @@ import { AiTool, AiToolkit, McpServer } from "@effect/ai"
 import { HttpClient, HttpClientResponse } from "@effect/platform"
 import { NodeHttpClient } from "@effect/platform-node"
 import {
+  Array,
   Duration,
   Effect,
   Layer,
   Option,
-  Resource,
+  pipe,
   Schedule,
   Schema,
+  Stream,
 } from "effect"
 import Minisearch from "minisearch"
 import * as Prettier from "prettier"
+import { Github } from "./Github.js"
+import { Markdown } from "./Markdown.js"
 
 const docUrls = [
   "https://raw.githubusercontent.com/tim-smart/effect-io-ai/refs/heads/main/json/_all.json",
@@ -22,15 +26,15 @@ const documentId = Schema.Number.annotations({
 
 const SearchResult = Schema.Struct({
   documentId,
-  label: Schema.String,
+  title: Schema.String,
+  description: Schema.String,
 }).annotations({
   description: "A search result from the Effect reference documentation.",
 })
 
 const toolkit = AiToolkit.make(
   AiTool.make("effect_doc_search", {
-    description:
-      "Searches the Effect reference documentation for a given query.",
+    description: "Searches the Effect documentation",
     parameters: {
       query: Schema.String.annotations({
         description:
@@ -51,12 +55,66 @@ const toolkit = AiToolkit.make(
     .annotate(AiTool.Destructive, false),
 )
 
+interface DocumentEntry {
+  readonly id: number
+  readonly title: string
+  readonly description: string
+  readonly content: Effect.Effect<string>
+}
+
 const ToolkitLayer = toolkit
   .toLayer(
     Effect.gen(function* () {
-      const docsClient = (yield* HttpClient.HttpClient).pipe(
+      const client = yield* HttpClient.HttpClient
+      const docsClient = client.pipe(
         HttpClient.filterStatusOk,
         HttpClient.retry(retryPolicy),
+      )
+      const gh = yield* Github
+      const markdown = yield* Markdown
+      const docs = Array.empty<DocumentEntry>()
+      const minisearch = new Minisearch<DocumentEntry>({
+        fields: ["title", "description"],
+        searchOptions: {
+          boost: { title: 2 },
+        },
+      })
+      const addDoc = (doc: Omit<DocumentEntry, "id">) => {
+        const entry: DocumentEntry = {
+          id: docs.length,
+          title: doc.title,
+          description: doc.description,
+          content: doc.content,
+        }
+        docs.push(entry)
+        minisearch.add(entry)
+      }
+
+      yield* pipe(
+        gh.walk({
+          owner: "effect-ts",
+          repo: "website",
+          path: "content/src/content/docs/docs",
+        }),
+        Stream.filter((file) => /\.mdx?$/.test(file.path)),
+        Stream.mapEffect(
+          (file) =>
+            client.get(file.download_url!).pipe(
+              Effect.flatMap((_) => _.text),
+              Effect.flatMap((md) => markdown.process(file.path, md)),
+            ),
+          { concurrency: "unbounded" },
+        ),
+        Stream.runForEach((file) =>
+          Effect.sync(() => {
+            addDoc({
+              title: file.title,
+              description: file.description,
+              content: Effect.succeed(file.content),
+            })
+          }),
+        ),
+        Effect.forkScoped,
       )
 
       const loadDocs = (url: string) =>
@@ -65,65 +123,49 @@ const ToolkitLayer = toolkit
           HttpClientResponse.schemaBodyJson(DocEntry.Array),
         )
 
-      const docs = yield* Resource.auto(
-        Effect.forEach(docUrls, loadDocs, {
-          concurrency: docUrls.length,
-        }).pipe(
-          Effect.map((_) => _.flat()),
-          Effect.map((entries) => {
-            const minisearch = new Minisearch<{
-              id: number
-              nameWithModule: string
-              description: string
-            }>({
-              fields: ["nameWithModule", "description"],
+      yield* Effect.forEach(docUrls, loadDocs, {
+        concurrency: docUrls.length,
+      }).pipe(
+        Effect.map((entries) => {
+          for (const entry of entries.flat()) {
+            addDoc({
+              title: entry.nameWithModule,
+              description: `Reference documentation for ${entry.nameWithModule}.`,
+              content: entry.asMarkdown,
             })
-            minisearch.addAll(
-              entries.map((entry, id) => ({
-                id,
-                nameWithModule: entry.nameWithModule,
-                description: Option.getOrElse(entry.description, () => ""),
-              })),
-            )
-            return { minisearch, entries }
-          }),
-        ),
-        Schedule.spaced(Duration.hours(3)),
+          }
+        }),
+        Effect.forkScoped,
       )
 
-      const search = (query: string) => {
-        query = query.toLowerCase()
-        return Resource.get(docs).pipe(
-          Effect.map(({ minisearch, entries }) =>
-            minisearch.search(query).map((result) => ({
-              id: Number(result.id),
-              entry: entries[result.id],
-            })),
-          ),
-          Effect.annotateLogs("module", "ReferenceDocs"),
-          Effect.annotateLogs("query", query),
+      const search = (query: string) =>
+        Effect.sync(() =>
+          minisearch.search(query).map((result) => docs[result.id]),
         )
-      }
 
       return toolkit.of({
         effect_doc_search: Effect.fn(function* ({ query }) {
           const results = yield* Effect.orDie(search(query))
           return results.map((result) => ({
             documentId: result.id,
-            label: result.entry.nameWithModule,
+            title: result.title,
+            description: result.description,
           }))
         }),
         get_effect_doc: Effect.fn(function* ({ documentId }) {
-          const doc = yield* Resource.get(docs).pipe(
-            Effect.map((_) => _.entries[documentId]),
-            Effect.orDie,
-          )
-          return yield* doc.asMarkdown
+          const doc = docs[documentId]
+          return yield* doc.content
         }),
       })
     }),
   )
-  .pipe(Layer.provide(NodeHttpClient.layerUndici))
+  .pipe(
+    Layer.provide([
+      NodeHttpClient.layerUndici,
+      Github.Default,
+      Markdown.Default,
+    ]),
+  )
 
 export const ReferenceDocsTools = McpServer.toolkit(toolkit).pipe(
   Layer.provide(ToolkitLayer),
