@@ -17,3 +17,20 @@ If you hit the github rate limit (for accessing the effect website docs), you ca
 ```bash
 docker run --rm -i -e GITHUB_TOKEN=your_token timsmart/effect-mcp
 ```
+
+## Claude Code Integration
+
+To use this MCP server with Claude Code, run the following command:
+
+```bash
+claude mcp add-json effect-docs '{ 
+  "command": "docker",
+  "args": [
+    "run",
+    "--rm",
+    "-i",
+    "timsmart/effect-mcp"
+  ],
+  "env": {}
+}' -s user
+```
