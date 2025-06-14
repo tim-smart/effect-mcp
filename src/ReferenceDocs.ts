@@ -16,6 +16,7 @@ import Minisearch from "minisearch"
 import * as Prettier from "prettier"
 import { Github } from "./Github.js"
 import { Markdown } from "./Markdown.js"
+import { readmes } from "./Readmes.js"
 
 const docUrls = [
   "https://raw.githubusercontent.com/tim-smart/effect-io-ai/refs/heads/main/json/_all.json",
@@ -90,6 +91,19 @@ const ToolkitLayer = toolkit
         minisearch.add(entry)
       }
 
+      // Readme documentation
+      for (const readme of readmes) {
+        addDoc({
+          title: readme.title,
+          description: readme.description,
+          content: client.get(readme.url).pipe(
+            Effect.flatMap((response) => response.text),
+            Effect.orDie,
+          ),
+        })
+      }
+
+      // Website documentation
       yield* pipe(
         gh.walk({
           owner: "effect-ts",
@@ -117,6 +131,7 @@ const ToolkitLayer = toolkit
         Effect.forkScoped,
       )
 
+      // Reference documentation
       const loadDocs = (url: string) =>
         Effect.flatMap(
           docsClient.get(url),
