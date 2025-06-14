@@ -12,6 +12,12 @@ You can run with docker using:
 docker run --rm -i timsmart/effect-mcp
 ```
 
+If you hit the github rate limit (for accessing the effect website docs), you can use the `GITHUB_TOKEN` environment variable to authenticate:
+
+```bash
+docker run --rm -i -e GITHUB_TOKEN=your_token timsmart/effect-mcp
+```
+
 ## Claude Code Integration
 
 To use this MCP server with Claude Code, run the following command:
@@ -28,5 +34,3 @@ claude mcp add-json effect-docs '{
   "env": {}
 }' -s user
 ```
-
-This configuration separates the command and arguments to avoid Docker spawn errors that can occur when using a single command string.
