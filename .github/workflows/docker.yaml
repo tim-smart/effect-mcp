@@ -22,9 +22,8 @@ jobs:
         id: meta
         with:
           images: timsmart/effect-mcp
-          tags: |
-            # set latest tag for default branch
-            type=raw,value=latest,enable={{is_default_branch}}
+          flavor: |
+            latest=true
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v2.7.0
