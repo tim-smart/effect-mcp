@@ -11,3 +11,22 @@ You can run with docker using:
 ```bash
 docker run --rm -i timsmart/effect-mcp
 ```
+
+## Claude Code Integration
+
+To use this MCP server with Claude Code, run the following command:
+
+```bash
+claude mcp add-json effect-docs '{ 
+  "command": "docker",
+  "args": [
+    "run",
+    "--rm",
+    "-i",
+    "timsmart/effect-mcp"
+  ],
+  "env": {}
+}' -s user
+```
+
+This configuration separates the command and arguments to avoid Docker spawn errors that can occur when using a single command string.
