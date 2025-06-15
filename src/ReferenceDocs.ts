@@ -1,6 +1,6 @@
 import { AiTool, AiToolkit, McpServer } from "@effect/ai"
-import { HttpClient, HttpClientResponse } from "@effect/platform"
-import { NodeHttpClient } from "@effect/platform-node"
+import { HttpClient, HttpClientResponse, Path } from "@effect/platform"
+import { NodeHttpClient, NodePath } from "@effect/platform-node"
 import {
   Array,
   Cache,
@@ -33,7 +33,7 @@ const documentId = Schema.Number.annotations({
 const SearchResult = Schema.Struct({
   documentId,
   title: Schema.String,
-  description: Schema.String,
+  description: Schema.optional(Schema.String),
 }).annotations({
   description: "A search result from the Effect reference documentation.",
 })
@@ -64,13 +64,14 @@ const toolkit = AiToolkit.make(
 interface DocumentEntry {
   readonly id: number
   readonly title: string
-  readonly description: string
+  readonly description?: string
   readonly content: Effect.Effect<string>
 }
 
 const ToolkitLayer = pipe(
   toolkit.toLayer(
     Effect.gen(function* () {
+      const path_ = yield* Path.Path
       const client = yield* HttpClient.HttpClient
       const docsClient = client.pipe(
         HttpClient.filterStatusOk,
@@ -115,13 +116,17 @@ const ToolkitLayer = pipe(
         ),
         Effect.flatMap(
           Effect.forEach(
-            (file) =>
-              client.get(websiteUrl(file)).pipe(
+            (filePath) =>
+              client.get(websiteUrl(filePath)).pipe(
                 Effect.flatMap((_) => _.text),
                 Effect.flatMap((md) => markdown.process(md)),
                 Effect.map((file) => {
+                  const dirname = path_.basename(path_.dirname(filePath))
                   addDoc({
-                    title: file.title,
+                    title:
+                      dirname !== "docs"
+                        ? `${dirname.replace("-", " ")} - ${file.title}`
+                        : file.title,
                     description: file.description,
                     content: Effect.succeed(file.content),
                   })
@@ -147,7 +152,6 @@ const ToolkitLayer = pipe(
           for (const entry of entries.flat()) {
             addDoc({
               title: entry.nameWithModule,
-              description: `Reference documentation for ${entry.nameWithModule}.`,
               content: entry.asMarkdown,
             })
           }
@@ -179,7 +183,11 @@ const ToolkitLayer = pipe(
       })
     }),
   ),
-  Layer.provide([NodeHttpClient.layerUndici, Markdown.Default]),
+  Layer.provide([
+    NodeHttpClient.layerUndici,
+    NodePath.layerPosix,
+    Markdown.Default,
+  ]),
 )
 
 export const ReferenceDocsTools = McpServer.toolkit(toolkit).pipe(
