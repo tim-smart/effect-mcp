@@ -7,7 +7,7 @@ export const readmes = [
   {
     package: "@effect/cli",
     name: "@effect/cli README",
-    title: "@effect/cli README",
+    title: "@effect/cli README - Command Line Interfaces",
     description: `README.md for the @effect/cli package, for implementing command line interfaces with Effect.`,
     url: "https://raw.githubusercontent.com/Effect-TS/effect/refs/heads/main/packages/cli/README.md",
   },
@@ -36,7 +36,7 @@ Contains information about:
   {
     package: "@effect/sql",
     name: "@effect/sql README",
-    title: "@effect/sql README",
+    title: "@effect/sql README - SQL client and database interaction",
     description: `README.md for the @effect/sql package, for interacting with SQL databases.`,
     url: "https://raw.githubusercontent.com/Effect-TS/effect/refs/heads/main/packages/sql/README.md",
   },
@@ -45,7 +45,7 @@ Contains information about:
 export const Readmes = Layer.mergeAll(
   ...Array.map(readmes, (readme) =>
     McpServer.resource({
-      uri: `readme://${readme.package}`,
+      uri: `effect://readme/${readme.package}`,
       name: readme.name,
       description: readme.description,
       content: HttpClient.get(readme.url).pipe(

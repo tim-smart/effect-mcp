@@ -3,6 +3,7 @@ import { HttpClient, HttpClientResponse } from "@effect/platform"
 import { NodeHttpClient } from "@effect/platform-node"
 import {
   Array,
+  Cache,
   Duration,
   Effect,
   Layer,
@@ -35,11 +36,11 @@ const SearchResult = Schema.Struct({
 
 const toolkit = AiToolkit.make(
   AiTool.make("effect_doc_search", {
-    description: "Searches the Effect documentation",
+    description:
+      "Searches the Effect documentation. Result content can be accessed with the `get_effect_doc` tool.",
     parameters: {
       query: Schema.String.annotations({
-        description:
-          "The search query to look for in the documentation, e.g. `Effect.map` or `Stream.flatMap`.",
+        description: "The search query to look for in the documentation.",
       }),
     },
     success: Schema.Array(SearchResult),
@@ -63,8 +64,8 @@ interface DocumentEntry {
   readonly content: Effect.Effect<string>
 }
 
-const ToolkitLayer = toolkit
-  .toLayer(
+const ToolkitLayer = pipe(
+  toolkit.toLayer(
     Effect.gen(function* () {
       const client = yield* HttpClient.HttpClient
       const docsClient = client.pipe(
@@ -158,6 +159,12 @@ const ToolkitLayer = toolkit
           minisearch.search(query).map((result) => docs[result.id]),
         )
 
+      const cache = yield* Cache.make({
+        lookup: (id: number) => docs[id].content,
+        capacity: 512,
+        timeToLive: Duration.hours(12),
+      })
+
       return toolkit.of({
         effect_doc_search: Effect.fn(function* ({ query }) {
           const results = yield* Effect.orDie(search(query))
@@ -167,20 +174,12 @@ const ToolkitLayer = toolkit
             description: result.description,
           }))
         }),
-        get_effect_doc: Effect.fn(function* ({ documentId }) {
-          const doc = docs[documentId]
-          return yield* doc.content
-        }),
+        get_effect_doc: ({ documentId }) => cache.get(documentId),
       })
     }),
-  )
-  .pipe(
-    Layer.provide([
-      NodeHttpClient.layerUndici,
-      Github.Default,
-      Markdown.Default,
-    ]),
-  )
+  ),
+  Layer.provide([NodeHttpClient.layerUndici, Github.Default, Markdown.Default]),
+)
 
 export const ReferenceDocsTools = McpServer.toolkit(toolkit).pipe(
   Layer.provide(ToolkitLayer),

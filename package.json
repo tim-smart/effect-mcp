@@ -1,17 +1,31 @@
 {
   "name": "effect-mcp",
+  "version": "0.0.0",
   "type": "module",
+  "bin": {
+    "effect-mcp": "./dist/main.cjs"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsx --watch src/main.ts"
+    "build": "tsup && ./scripts/copy-package-json.ts",
+    "dev": "tsx --watch src/main.ts",
+    "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.4",
     "@effect/ai": "^0.18.16",
     "@effect/language-service": "^0.20.1",
     "@effect/platform": "^0.84.11",
     "@effect/platform-node": "^0.85.16",
     "@octokit/plugin-rest-endpoint-methods": "^16.0.0",
     "@octokit/types": "^14.1.0",
+    "@types/node": "^24.0.1",
     "@types/unist": "^3.0.3",
     "effect": "^3.16.7",
     "minisearch": "^7.1.2",
