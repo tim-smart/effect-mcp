@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { McpServer } from "@effect/ai"
 import { NodeRuntime, NodeSink, NodeStream } from "@effect/platform-node"
 import { Layer, Logger } from "effect"
