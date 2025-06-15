@@ -27,7 +27,7 @@ claude mcp add-json effect-docs '{
   "command": "npx",
   "args": [
     "-y",
-    "effect-mcp",
+    "effect-mcp"
   ],
   "env": {}
 }' -s user
