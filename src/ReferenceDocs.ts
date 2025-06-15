@@ -11,17 +11,21 @@ import {
   pipe,
   Schedule,
   Schema,
-  Stream,
 } from "effect"
 import Minisearch from "minisearch"
 import * as Prettier from "prettier"
-import { Github } from "./Github.js"
 import { Markdown } from "./Markdown.js"
 import { readmes } from "./Readmes.js"
 
 const docUrls = [
   "https://raw.githubusercontent.com/tim-smart/effect-io-ai/refs/heads/main/json/_all.json",
 ]
+const websiteContentUrl =
+  "https://raw.githubusercontent.com/tim-smart/effect-io-ai/refs/heads/main/website/content.json"
+
+const websiteUrl = (path: string) =>
+  `https://raw.githubusercontent.com/effect-ts/website/refs/heads/main/${path}`
+
 const documentId = Schema.Number.annotations({
   description: "The unique identifier for the Effect documentation entry.",
 })
@@ -72,7 +76,6 @@ const ToolkitLayer = pipe(
         HttpClient.filterStatusOk,
         HttpClient.retry(retryPolicy),
       )
-      const gh = yield* Github
       const markdown = yield* Markdown
       const docs = Array.empty<DocumentEntry>()
       const minisearch = new Minisearch<DocumentEntry>({
@@ -106,28 +109,26 @@ const ToolkitLayer = pipe(
 
       // Website documentation
       yield* pipe(
-        gh.walk({
-          owner: "effect-ts",
-          repo: "website",
-          path: "content/src/content/docs/docs",
-        }),
-        Stream.filter((file) => /\.mdx?$/.test(file.path)),
-        Stream.mapEffect(
-          (file) =>
-            client.get(file.download_url!).pipe(
-              Effect.flatMap((_) => _.text),
-              Effect.flatMap((md) => markdown.process(file.path, md)),
-            ),
-          { concurrency: "unbounded" },
+        client.get(websiteContentUrl),
+        Effect.flatMap(
+          HttpClientResponse.schemaBodyJson(Schema.Array(Schema.String)),
         ),
-        Stream.runForEach((file) =>
-          Effect.sync(() => {
-            addDoc({
-              title: file.title,
-              description: file.description,
-              content: Effect.succeed(file.content),
-            })
-          }),
+        Effect.flatMap(
+          Effect.forEach(
+            (file) =>
+              client.get(websiteUrl(file)).pipe(
+                Effect.flatMap((_) => _.text),
+                Effect.flatMap((md) => markdown.process(md)),
+                Effect.map((file) => {
+                  addDoc({
+                    title: file.title,
+                    description: file.description,
+                    content: Effect.succeed(file.content),
+                  })
+                }),
+              ),
+            { concurrency: "unbounded", discard: true },
+          ),
         ),
         Effect.forkScoped,
       )
@@ -178,7 +179,7 @@ const ToolkitLayer = pipe(
       })
     }),
   ),
-  Layer.provide([NodeHttpClient.layerUndici, Github.Default, Markdown.Default]),
+  Layer.provide([NodeHttpClient.layerUndici, Markdown.Default]),
 )
 
 export const ReferenceDocsTools = McpServer.toolkit(toolkit).pipe(

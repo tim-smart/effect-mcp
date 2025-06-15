@@ -36,7 +36,7 @@ export class Markdown extends Effect.Service<Markdown>()("Markdown", {
       })
       .use(remarkStringify)
 
-    const process = (file: string, markdown: string) =>
+    const process = (markdown: string) =>
       Effect.promise(() => processor.process(markdown)).pipe(
         Effect.map((vfile) => {
           const frontmatter = (vfile.data.frontmatter ?? {}) as Record<
@@ -52,7 +52,7 @@ export class Markdown extends Effect.Service<Markdown>()("Markdown", {
             .map((h) => h.text)
             .join("\n- ")
           return {
-            title: frontmatter.title ?? file,
+            title: frontmatter.title,
             description: `${frontmatter.description}\n\n- ${h2s}`,
             frontmatter,
             headings,
