@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.2
+
+### Patch Changes
+
+- [`49adb9c`](https://github.com/tim-smart/effect-mcp/commit/49adb9c99a8586918df9fea698519c3ff911fc46) Thanks [@tim-smart](https://github.com/tim-smart)! - remove requirement for github api
+
 ## 0.1.1
 
 ### Patch Changes
