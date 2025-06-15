@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.1
+
+### Patch Changes
+
+- [`a33db93`](https://github.com/tim-smart/effect-mcp/commit/a33db93807530b6ba2aed0a51eb4a9f9b55eb499) Thanks [@tim-smart](https://github.com/tim-smart)! - tweak bin field
+
 ## 0.1.0
 
 ### Minor Changes
