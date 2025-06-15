@@ -2,6 +2,10 @@
   "name": "effect-mcp",
   "version": "0.0.0",
   "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "bin": {
     "effect-mcp": "./dist/main.cjs"
   },
