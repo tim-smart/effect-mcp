@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.3
+
+### Patch Changes
+
+- [`4c9392f`](https://github.com/tim-smart/effect-mcp/commit/4c9392f3124f43c9413533629572608020210282) Thanks [@tim-smart](https://github.com/tim-smart)! - add docs section to titles
+
 ## 0.1.2
 
 ### Patch Changes
