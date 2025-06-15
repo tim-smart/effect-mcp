@@ -16,7 +16,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup && ./scripts/copy-package-json.ts",
+    "build": "tsup && tsx ./scripts/copy-package-json.ts",
     "dev": "tsx --watch src/main.ts",
     "prepublishOnly": "pnpm build"
   },
