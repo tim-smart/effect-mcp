@@ -14,12 +14,15 @@ export const readmes = [
   {
     package: "@effect/platform",
     name: "@effect/platform README",
-    title: "@effect/platform README - HttpApi, HttpClient, HttpServer",
+    title:
+      "@effect/platform README - HttpApi, HttpClient, HttpServer, HttpLayerRouter",
     description: `README.md for the @effect/platform package.
+
 Contains information about:
 - HttpApi
 - HttpClient
-- HttpServer`,
+- HttpServer
+- HttpLayerRouter`,
     url: "https://raw.githubusercontent.com/Effect-TS/effect/refs/heads/main/packages/platform/README.md",
   },
   {
