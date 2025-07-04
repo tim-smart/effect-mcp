@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.4
+
+### Patch Changes
+
+- [`3e5e09b`](https://github.com/tim-smart/effect-mcp/commit/3e5e09bc63eaa78577ccb81f1ab260e9d27d429d) Thanks [@tim-smart](https://github.com/tim-smart)! - update dependencies
+
 ## 0.1.3
 
 ### Patch Changes
