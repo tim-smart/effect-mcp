@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.5
+
+### Patch Changes
+
+- [`78b5296`](https://github.com/tim-smart/effect-mcp/commit/78b529640403d684d41145b31d53e7739c81adf6) Thanks [@tim-smart](https://github.com/tim-smart)! - mention HttpLayerRouter in platform readme description
+
 ## 0.1.4
 
 ### Patch Changes
