@@ -47,7 +47,9 @@ const toolkit = AiToolkit.make(
         description: "The search query to look for in the documentation.",
       }),
     },
-    success: Schema.Array(SearchResult),
+    success: Schema.Struct({
+      results: Schema.Array(SearchResult),
+    }),
   })
     .annotate(AiTool.Readonly, true)
     .annotate(AiTool.Destructive, false),
@@ -161,7 +163,10 @@ const ToolkitLayer = pipe(
 
       const search = (query: string) =>
         Effect.sync(() =>
-          minisearch.search(query).map((result) => docs[result.id]),
+          minisearch
+            .search(query)
+            .slice(0, 50)
+            .map((result) => docs[result.id]),
         )
 
       const cache = yield* Cache.make({
@@ -173,11 +178,13 @@ const ToolkitLayer = pipe(
       return toolkit.of({
         effect_doc_search: Effect.fn(function* ({ query }) {
           const results = yield* Effect.orDie(search(query))
-          return results.map((result) => ({
-            documentId: result.id,
-            title: result.title,
-            description: result.description,
-          }))
+          return {
+            results: results.map((result) => ({
+              documentId: result.id,
+              title: result.title,
+              description: result.description,
+            })),
+          }
         }),
         get_effect_doc: ({ documentId }) => cache.get(documentId),
       })
