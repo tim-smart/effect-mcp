@@ -55,9 +55,19 @@ const toolkit = AiToolkit.make(
     .annotate(AiTool.Destructive, false),
 
   AiTool.make("get_effect_doc", {
-    description: "Get the Effect documentation for a documentId.",
-    parameters: { documentId },
-    success: Schema.String,
+    description:
+      "Get the Effect documentation for a documentId. The content might be paginated. Use the `page` parameter to specify which page to retrieve.",
+    parameters: {
+      documentId,
+      page: Schema.optional(Schema.Number).annotations({
+        description: "The page number to retrieve for the document content.",
+      }),
+    },
+    success: Schema.Struct({
+      content: Schema.String,
+      page: Schema.Number,
+      totalPages: Schema.Number,
+    }),
   })
     .annotate(AiTool.Readonly, true)
     .annotate(AiTool.Destructive, false),
@@ -176,7 +186,7 @@ const ToolkitLayer = pipe(
       })
 
       return toolkit.of({
-        effect_doc_search: Effect.fn(function* ({ query }) {
+        effect_doc_search: Effect.fnUntraced(function* ({ query }) {
           const results = yield* Effect.orDie(search(query))
           return {
             results: results.map((result) => ({
@@ -186,7 +196,18 @@ const ToolkitLayer = pipe(
             })),
           }
         }),
-        get_effect_doc: ({ documentId }) => cache.get(documentId),
+        get_effect_doc: Effect.fnUntraced(function* ({ documentId, page = 1 }) {
+          const pageSize = 1000
+          const content = yield* cache.get(documentId)
+          const lines = content.split("\n")
+          const pages = Math.ceil(lines.length / pageSize)
+          const offset = (page - 1) * pageSize
+          return {
+            content: lines.slice(offset, offset + pageSize).join("\n"),
+            page,
+            totalPages: pages,
+          }
+        }),
       })
     }),
   ),
