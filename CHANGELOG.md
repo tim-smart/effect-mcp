@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.6
+
+### Patch Changes
+
+- [`0f29797`](https://github.com/tim-smart/effect-mcp/commit/0f297977e23c0ed926952602f979bf1f32ec3b51) Thanks [@tim-smart](https://github.com/tim-smart)! - add pagination to doc lookup
+
 ## 0.1.5
 
 ### Patch Changes
