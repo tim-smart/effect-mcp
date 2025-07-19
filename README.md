@@ -15,7 +15,7 @@ docker run --rm -i timsmart/effect-mcp
 Or use npx:
 
 ```bash
-npx -y effect-mcp
+npx -y effect-mcp@latest
 ```
 
 ## Claude Code Integration
@@ -27,7 +27,7 @@ claude mcp add-json effect-docs '{
   "command": "npx",
   "args": [
     "-y",
-    "effect-mcp"
+    "effect-mcp@latest"
   ],
   "env": {}
 }' -s user
