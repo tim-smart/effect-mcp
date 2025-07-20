@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.7
+
+### Patch Changes
+
+- [`e480428`](https://github.com/tim-smart/effect-mcp/commit/e48042839d437f50da72b0563500f966a6aec132) Thanks [@tim-smart](https://github.com/tim-smart)! - Add writing effect guide
+
 ## 0.1.6
 
 ### Patch Changes
