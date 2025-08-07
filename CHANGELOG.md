@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.9
+
+### Patch Changes
+
+- [`a19b17b`](https://github.com/tim-smart/effect-mcp/commit/a19b17ba649c7e3111cd03c2b8d8061d68210b00) Thanks [@tim-smart](https://github.com/tim-smart)! - remove duplicate guide
+
 ## 0.1.8
 
 ### Patch Changes
