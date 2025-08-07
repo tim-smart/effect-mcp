@@ -15,7 +15,7 @@ import {
 import Minisearch from "minisearch"
 import * as Prettier from "prettier"
 import { Markdown } from "./Markdown.js"
-import { readmes } from "./Readmes.js"
+import { guides, readmes } from "./Readmes.js"
 
 const docUrls = [
   "https://raw.githubusercontent.com/tim-smart/effect-io-ai/refs/heads/main/json/_all.json",
@@ -108,6 +108,18 @@ const ToolkitLayer = pipe(
         minisearch.add(entry)
       }
 
+      // Guides documentation
+      for (const guide of guides) {
+        addDoc({
+          title: guide.title,
+          description: guide.description,
+          content: client.get(guide.url).pipe(
+            Effect.flatMap((response) => response.text),
+            Effect.orDie,
+          ),
+        })
+      }
+
       // Readme documentation
       for (const readme of readmes) {
         addDoc({
@@ -121,8 +133,7 @@ const ToolkitLayer = pipe(
       }
 
       // Website documentation
-      yield* pipe(
-        client.get(websiteContentUrl),
+      yield* client.get(websiteContentUrl).pipe(
         Effect.flatMap(
           HttpClientResponse.schemaBodyJson(Schema.Array(Schema.String)),
         ),

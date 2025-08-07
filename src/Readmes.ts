@@ -24,22 +24,6 @@ export const guides = [
 
 export const readmes = [
   {
-    package: "effect",
-    name: "Writing Effect Guide",
-    title: "Writing Effect Guide - Learn the basics of writing Effect code",
-    description: `Essential information for writing Effect code, including:
-
-- Writing basic Effect code
-- Writing Effect functions
-- Error handling in Effect
-- Defining & using Effect services
-- Declaring your domain models with Schema
-- Adding observability to your Effect code
-- Testing Effect code
-- Common patterns in Effect code (HttpApi, HttpClient, ManagedRuntime etc.)`,
-    url: "https://raw.githubusercontent.com/tim-smart/effect-mcp/refs/heads/main/AGENTS.md",
-  },
-  {
     package: "@effect/cli",
     name: "@effect/cli README",
     title: "@effect/cli README - Command Line Interfaces",
@@ -84,7 +68,7 @@ export const Readmes = Layer.mergeAll(
   ...Array.map(guides, (guide) =>
     McpServer.resource({
       uri: `effect://guide/${guide.name}`,
-      name: guide.name,
+      name: guide.title,
       description: guide.description,
       content: HttpClient.get(guide.url).pipe(
         Effect.flatMap((response) => response.text),
