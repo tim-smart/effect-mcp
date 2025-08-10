@@ -7,7 +7,7 @@
     "directory": "dist"
   },
   "bin": {
-    "effect-mcp": "./dist/main.cjs"
+    "effect-mcp": "./dist/index.cjs"
   },
   "files": [
     "dist",
@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "tsup && tsx ./scripts/copy-package-json.ts",
-    "dev": "tsx --watch src/main.ts",
+    "dev": "tsx --watch src/index.ts",
     "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
