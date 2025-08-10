@@ -5,7 +5,7 @@ import { Layer, Logger } from "effect"
 import { ReferenceDocsTools } from "./ReferenceDocs.js"
 import { Readmes } from "./Readmes.js"
 
-McpServer.layerStdio({
+McpServer.layerHttp({
   name: "effect-mcp",
   version: "0.1.0",
   stdin: NodeStream.stdin,
