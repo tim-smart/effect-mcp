@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.11
+
+### Patch Changes
+
+- [`f06157b`](https://github.com/tim-smart/effect-mcp/commit/f06157b936417b0444f6295558ed6d596ebdd7f3) Thanks [@tim-smart](https://github.com/tim-smart)! - try effect v4
+
 ## 0.1.10
 
 ### Patch Changes
