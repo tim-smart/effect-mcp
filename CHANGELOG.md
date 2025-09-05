@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.12
+
+### Patch Changes
+
+- [`2cea2be`](https://github.com/tim-smart/effect-mcp/commit/2cea2be65d2f3ef295eebe2195c40793109d3661) Thanks [@tim-smart](https://github.com/tim-smart)! - move platform-node to external dep
+
 ## 0.1.11
 
 ### Patch Changes
