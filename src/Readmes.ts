@@ -1,7 +1,8 @@
-import { McpServer } from "@effect/ai"
-import { HttpClient } from "@effect/platform"
 import { NodeHttpClient } from "@effect/platform-node"
-import { Array, Effect, Layer } from "effect"
+import { Effect, Layer } from "effect"
+import { Array } from "effect/collections"
+import { McpServer } from "effect/unstable/ai"
+import { HttpClient } from "effect/unstable/http"
 
 export const guides = [
   {

@@ -1,17 +1,13 @@
-import { AiTool, AiToolkit, McpServer } from "@effect/ai"
-import { HttpClient, HttpClientResponse, Path } from "@effect/platform"
 import { NodeHttpClient, NodePath } from "@effect/platform-node"
-import {
-  Array,
-  Cache,
-  Duration,
-  Effect,
-  Layer,
-  Option,
-  pipe,
-  Schedule,
-  Schema,
-} from "effect"
+import { Effect, Layer, pipe, Schedule } from "effect"
+import { Cache } from "effect/caching"
+import { Array } from "effect/collections"
+import { Option } from "effect/data"
+import { Path } from "effect/platform"
+import { Schema } from "effect/schema"
+import { Duration } from "effect/time"
+import { AiTool, AiToolkit, McpServer } from "effect/unstable/ai"
+import { HttpClient, HttpClientResponse } from "effect/unstable/http"
 import Minisearch from "minisearch"
 import * as Prettier from "prettier"
 import { Markdown } from "./Markdown.js"
@@ -26,7 +22,7 @@ const websiteContentUrl =
 const websiteUrl = (path: string) =>
   `https://raw.githubusercontent.com/effect-ts/website/refs/heads/main/${path}`
 
-const documentId = Schema.Number.annotations({
+const documentId = Schema.Number.annotate({
   description: "The unique identifier for the Effect documentation entry.",
 })
 
@@ -34,7 +30,7 @@ const SearchResult = Schema.Struct({
   documentId,
   title: Schema.String,
   description: Schema.optional(Schema.String),
-}).annotations({
+}).annotate({
   description: "A search result from the Effect reference documentation.",
 })
 
@@ -43,7 +39,7 @@ const toolkit = AiToolkit.make(
     description:
       "Searches the Effect documentation. Result content can be accessed with the `get_effect_doc` tool.",
     parameters: {
-      query: Schema.String.annotations({
+      query: Schema.String.annotate({
         description: "The search query to look for in the documentation.",
       }),
     },
@@ -59,7 +55,7 @@ const toolkit = AiToolkit.make(
       "Get the Effect documentation for a documentId. The content might be paginated. Use the `page` parameter to specify which page to retrieve.",
     parameters: {
       documentId,
-      page: Schema.optional(Schema.Number).annotations({
+      page: Schema.optional(Schema.Number).annotate({
         description: "The page number to retrieve for the document content.",
       }),
     },
@@ -193,7 +189,7 @@ const ToolkitLayer = pipe(
       const cache = yield* Cache.make({
         lookup: (id: number) => docs[id].content,
         capacity: 512,
-        timeToLive: Duration.hours(12),
+        timeToLive: "12 hours",
       })
 
       return toolkit.of({
@@ -209,7 +205,7 @@ const ToolkitLayer = pipe(
         }),
         get_effect_doc: Effect.fnUntraced(function* ({ documentId, page = 1 }) {
           const pageSize = 1000
-          const content = yield* cache.get(documentId)
+          const content = yield* Cache.get(cache, documentId)
           const lines = content.split("\n")
           const pages = Math.ceil(lines.length / pageSize)
           const offset = (page - 1) * pageSize
@@ -225,7 +221,7 @@ const ToolkitLayer = pipe(
   Layer.provide([
     NodeHttpClient.layerUndici,
     NodePath.layerPosix,
-    Markdown.Default,
+    Markdown.layer,
   ]),
 )
 
@@ -242,26 +238,17 @@ class DocEntry extends Schema.Class<DocEntry>("DocEntry")({
   }),
   project: Schema.String,
   name: Schema.String,
-  description: Schema.optionalWith(Schema.String, {
-    as: "Option",
-    nullable: true,
-  }),
+  description: Schema.OptionFromOptional(Schema.String),
   deprecated: Schema.Boolean,
   examples: Schema.Array(Schema.String),
   since: Schema.String,
-  category: Schema.optionalWith(Schema.String, {
-    as: "Option",
-    nullable: true,
-  }),
-  signature: Schema.optionalWith(Schema.String, {
-    as: "Option",
-    nullable: true,
-  }),
+  category: Schema.OptionFromOptional(Schema.String),
+  signature: Schema.OptionFromOptional(Schema.String),
   sourceUrl: Schema.String,
 }) {
   static readonly Array = Schema.Array(this)
-  static readonly decode = Schema.decodeUnknown(this)
-  static readonly decodeArray = Schema.decodeUnknown(this.Array)
+  static readonly decode = Schema.decodeUnknownEffect(this)
+  static readonly decodeArray = Schema.decodeUnknownEffect(this.Array)
 
   get url() {
     const project =

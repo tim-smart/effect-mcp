@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-import { McpServer } from "@effect/ai"
 import { NodeRuntime, NodeSink, NodeStream } from "@effect/platform-node"
-import { Layer, Logger } from "effect"
+import { Layer } from "effect"
 import { ReferenceDocsTools } from "./ReferenceDocs.js"
 import { Readmes } from "./Readmes.js"
+import { McpServer } from "effect/unstable/ai"
+import { Logger } from "effect/logging"
 
 McpServer.layerStdio({
   name: "effect-mcp",
@@ -12,7 +13,7 @@ McpServer.layerStdio({
   stdout: NodeSink.stdout,
 }).pipe(
   Layer.provide([ReferenceDocsTools, Readmes]),
-  Layer.provide(Logger.add(Logger.prettyLogger({ stderr: true }))),
+  Layer.provide(Layer.succeed(Logger.LogToStderr)(true)),
   Layer.launch,
   NodeRuntime.runMain,
 )

@@ -23,13 +23,10 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.6",
-    "@effect/ai": "^0.26.1",
     "@effect/language-service": "^0.37.0",
-    "@effect/platform": "^0.90.6",
-    "@effect/platform-node": "^0.96.1",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "@types/unist": "^3.0.3",
-    "effect": "^3.17.11",
+    "effect": "https://pkg.pr.new/Effect-TS/effect-smol/effect@aac19ee",
     "minisearch": "^7.1.2",
     "prettier": "^3.6.2",
     "remark-frontmatter": "^5.0.0",
@@ -41,5 +38,8 @@
     "typescript": "^5.9.2",
     "unified": "^11.0.5"
   },
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
+  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac",
+  "dependencies": {
+    "@effect/platform-node": "https://pkg.pr.new/Effect-TS/effect-smol/@effect/platform-node@aac19ee"
+  }
 }
