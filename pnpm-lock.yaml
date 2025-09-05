@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@effect/platform-node':
-        specifier: https://pkg.pr.new/Effect-TS/effect-smol/@effect/platform-node@aac19ee
-        version: https://pkg.pr.new/Effect-TS/effect-smol/@effect/platform-node@aac19ee(effect@https://pkg.pr.new/Effect-TS/effect-smol/effect@aac19ee)
     devDependencies:
       '@changesets/changelog-github':
         specifier: ^0.5.1
@@ -21,6 +17,9 @@ importers:
       '@effect/language-service':
         specifier: ^0.37.0
         version: 0.37.0
+      '@effect/platform-node':
+        specifier: https://pkg.pr.new/Effect-TS/effect-smol/@effect/platform-node@aac19ee
+        version: https://pkg.pr.new/Effect-TS/effect-smol/@effect/platform-node@aac19ee(effect@https://pkg.pr.new/Effect-TS/effect-smol/effect@aac19ee)
       '@types/node':
         specifier: ^24.3.1
         version: 24.3.1
