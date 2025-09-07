@@ -1,5 +1,11 @@
 # effect-mcp
 
+## 0.1.13
+
+### Patch Changes
+
+- [`38f62eb`](https://github.com/tim-smart/effect-mcp/commit/38f62ebe2fc6bf6d84b6c42abbf1e210a0d660c3) Thanks [@tim-smart](https://github.com/tim-smart)! - update effect
+
 ## 0.1.12
 
 ### Patch Changes
