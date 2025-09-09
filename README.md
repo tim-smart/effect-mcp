@@ -1,7 +1,5 @@
 # effect mcp server
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=effect%20docs&config=eyJjb21tYW5kIjoibnB4IC15IGVmZmVjdC1tY3AifQ%3D%3D)
-
 This MCP server adds tools and resources for accessing Effect documentation.
 
 ## Usage
