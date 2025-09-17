@@ -18,6 +18,16 @@ Or use npx:
 npx -y effect-mcp
 ```
 
+## Cursor
+To use this MCP server with Cursor, please add the following to your cursor `mcp.json`:
+
+```json
+"effect-docs": {
+  "command": "npx",
+  "args": ["-y", "effect-mcp@latest"]
+}
+```
+
 ## Claude Code Integration
 
 To use this MCP server with Claude Code, run the following command:
