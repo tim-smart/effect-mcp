@@ -35,7 +35,7 @@ const SearchResult = Schema.Struct({
 })
 
 const toolkit = AiToolkit.make(
-  AiTool.make("effect_doc_search", {
+  AiTool.make("effect_docs_search", {
     description:
       "Searches the Effect documentation. Result content can be accessed with the `get_effect_doc` tool.",
     parameters: {
@@ -193,7 +193,7 @@ const ToolkitLayer = pipe(
       })
 
       return toolkit.of({
-        effect_doc_search: Effect.fnUntraced(function* ({ query }) {
+        effect_docs_search: Effect.fnUntraced(function* ({ query }) {
           const results = yield* Effect.orDie(search(query))
           return {
             results: results.map((result) => ({
