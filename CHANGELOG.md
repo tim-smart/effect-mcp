@@ -1,5 +1,13 @@
 # effect-mcp
 
+## 0.1.15
+
+### Patch Changes
+
+- [`762a8d6`](https://github.com/tim-smart/effect-mcp/commit/762a8d68787028b1e7efff42577488d25a32466c) Thanks [@tim-smart](https://github.com/tim-smart)! - improve error handling
+
+- [`762a8d6`](https://github.com/tim-smart/effect-mcp/commit/762a8d68787028b1e7efff42577488d25a32466c) Thanks [@tim-smart](https://github.com/tim-smart)! - update effect
+
 ## 0.1.14
 
 ### Patch Changes
