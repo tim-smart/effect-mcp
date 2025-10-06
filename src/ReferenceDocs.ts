@@ -1,11 +1,9 @@
 import { NodeHttpClient, NodePath } from "@effect/platform-node"
-import { Effect, Layer, pipe, Schedule } from "effect"
-import { Cache } from "effect/caching"
+import { Cache, Duration, Effect, Exit, Layer, pipe, Schedule } from "effect"
 import { Array } from "effect/collections"
 import { Option } from "effect/data"
 import { Path } from "effect/platform"
 import { Schema } from "effect/schema"
-import { Duration } from "effect/time"
 import { AiTool, AiToolkit, McpServer } from "effect/unstable/ai"
 import { HttpClient, HttpClientResponse } from "effect/unstable/http"
 import Minisearch from "minisearch"
@@ -29,7 +27,7 @@ const documentId = Schema.Number.annotate({
 const SearchResult = Schema.Struct({
   documentId,
   title: Schema.String,
-  description: Schema.optional(Schema.String),
+  description: Schema.String,
 }).annotate({
   description: "A search result from the Effect reference documentation.",
 })
@@ -72,7 +70,7 @@ const toolkit = AiToolkit.make(
 interface DocumentEntry {
   readonly id: number
   readonly title: string
-  readonly description?: string
+  readonly description: string
   readonly content: Effect.Effect<string>
 }
 
@@ -80,10 +78,20 @@ const ToolkitLayer = pipe(
   toolkit.toLayer(
     Effect.gen(function* () {
       const path_ = yield* Path.Path
-      const client = yield* HttpClient.HttpClient
-      const docsClient = client.pipe(
+      const defaultClient = yield* HttpClient.HttpClient
+      const docsClient = defaultClient.pipe(
         HttpClient.filterStatusOk,
-        HttpClient.retry(retryPolicy),
+        HttpClient.retry({
+          times: 5,
+          schedule: retryPolicy,
+        }),
+      )
+      const contentClient = defaultClient.pipe(
+        HttpClient.filterStatusOk,
+        HttpClient.retry({
+          times: 3,
+          schedule: Schedule.spaced(Duration.millis(500)),
+        }),
       )
       const markdown = yield* Markdown
       const docs = Array.empty<DocumentEntry>()
@@ -109,7 +117,7 @@ const ToolkitLayer = pipe(
         addDoc({
           title: guide.title,
           description: guide.description,
-          content: client.get(guide.url).pipe(
+          content: contentClient.get(guide.url).pipe(
             Effect.flatMap((response) => response.text),
             Effect.orDie,
           ),
@@ -121,7 +129,7 @@ const ToolkitLayer = pipe(
         addDoc({
           title: readme.title,
           description: readme.description,
-          content: client.get(readme.url).pipe(
+          content: contentClient.get(readme.url).pipe(
             Effect.flatMap((response) => response.text),
             Effect.orDie,
           ),
@@ -129,14 +137,14 @@ const ToolkitLayer = pipe(
       }
 
       // Website documentation
-      yield* client.get(websiteContentUrl).pipe(
+      yield* docsClient.get(websiteContentUrl).pipe(
         Effect.flatMap(
           HttpClientResponse.schemaBodyJson(Schema.Array(Schema.String)),
         ),
         Effect.flatMap(
           Effect.forEach(
             (filePath) =>
-              client.get(websiteUrl(filePath)).pipe(
+              docsClient.get(websiteUrl(filePath)).pipe(
                 Effect.flatMap((_) => _.text),
                 Effect.flatMap((md) => markdown.process(md)),
                 Effect.map((file) => {
@@ -150,8 +158,15 @@ const ToolkitLayer = pipe(
                     content: Effect.succeed(file.content),
                   })
                 }),
+                Effect.tapCause((cause) =>
+                  Effect.logWarning(
+                    `Failed to load website doc ${filePath}`,
+                    cause,
+                  ),
+                ),
+                Effect.ignore,
               ),
-            { concurrency: "unbounded", discard: true },
+            { concurrency: 10, discard: true },
           ),
         ),
         Effect.forkScoped,
@@ -164,14 +179,13 @@ const ToolkitLayer = pipe(
           HttpClientResponse.schemaBodyJson(DocEntry.Array),
         )
 
-      yield* Effect.forEach(docUrls, loadDocs, {
-        concurrency: docUrls.length,
-      }).pipe(
+      yield* Effect.forEach(docUrls, loadDocs, { concurrency: 5 }).pipe(
         Effect.map((entries) => {
           for (const entry of entries.flat()) {
             addDoc({
               title: entry.nameWithModule,
               content: entry.asMarkdown,
+              description: `Reference documentation for ${entry.nameWithModule} (${entry._tag}) from "${entry.project}"`,
             })
           }
         }),
@@ -186,10 +200,12 @@ const ToolkitLayer = pipe(
             .map((result) => docs[result.id]),
         )
 
-      const cache = yield* Cache.make({
-        lookup: (id: number) => docs[id].content,
+      const cache = yield* Cache.makeWith({
+        lookup: (id: number) =>
+          docs[id].content.pipe(Effect.map((_) => _.split("\n"))),
         capacity: 512,
-        timeToLive: "12 hours",
+        timeToLive: (exit) =>
+          Exit.isSuccess(exit) ? Duration.hours(12) : Duration.minutes(1),
       })
 
       return toolkit.of({
@@ -204,9 +220,8 @@ const ToolkitLayer = pipe(
           }
         }),
         get_effect_doc: Effect.fnUntraced(function* ({ documentId, page = 1 }) {
-          const pageSize = 1000
-          const content = yield* Cache.get(cache, documentId)
-          const lines = content.split("\n")
+          const pageSize = 500
+          const lines = yield* Cache.get(cache, documentId)
           const pages = Math.ceil(lines.length / pageSize)
           const offset = (page - 1) * pageSize
           return {
@@ -309,4 +324,4 @@ const prettify = (code: string) =>
 
 // errors
 
-const retryPolicy = Schedule.spaced(Duration.seconds(3))
+const retryPolicy = Schedule.spaced(Duration.seconds(1))

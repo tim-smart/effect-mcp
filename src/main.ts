@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import { NodeRuntime, NodeSink, NodeStream } from "@effect/platform-node"
-import { Layer } from "effect"
+import { Layer, Logger } from "effect"
 import { ReferenceDocsTools } from "./ReferenceDocs.js"
 import { Readmes } from "./Readmes.js"
 import { McpServer } from "effect/unstable/ai"
-import { Logger } from "effect/logging"
 
 McpServer.layerStdio({
   name: "effect-mcp",

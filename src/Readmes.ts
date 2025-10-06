@@ -1,5 +1,5 @@
 import { NodeHttpClient } from "@effect/platform-node"
-import { Effect, Layer } from "effect"
+import { Effect, Layer, Schedule } from "effect"
 import { Array } from "effect/collections"
 import { McpServer } from "effect/unstable/ai"
 import { HttpClient } from "effect/unstable/http"
@@ -73,6 +73,10 @@ export const Readmes = Layer.mergeAll(
       description: guide.description,
       content: HttpClient.get(guide.url).pipe(
         Effect.flatMap((response) => response.text),
+        Effect.retry({
+          schedule: Schedule.spaced(500),
+          times: 3,
+        }),
       ),
     }),
   ),
@@ -83,6 +87,10 @@ export const Readmes = Layer.mergeAll(
       description: readme.description,
       content: HttpClient.get(readme.url).pipe(
         Effect.flatMap((response) => response.text),
+        Effect.retry({
+          schedule: Schedule.spaced(500),
+          times: 3,
+        }),
       ),
     }),
   ),
