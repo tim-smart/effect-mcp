@@ -18,27 +18,27 @@
   "scripts": {
     "build": "tsup && tsx ./scripts/copy-package-json.ts",
     "dev": "tsx --watch src/main.ts",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "inspect": "pnpx @modelcontextprotocol/inspector tsx src/main.ts"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
-    "@changesets/cli": "^2.29.6",
+    "@changesets/cli": "^2.29.7",
     "@effect/language-service": "^0.37.0",
-    "@effect/platform-node": "https://pkg.pr.new/Effect-TS/effect-smol/@effect/platform-node@ad88856",
-    "@types/node": "^24.3.1",
+    "@effect/platform-node": "https://pkg.pr.new/Effect-TS/effect-smol/@effect/platform-node@fa86ef8",
+    "@types/node": "^24.7.0",
     "@types/unist": "^3.0.3",
-    "effect": "https://pkg.pr.new/Effect-TS/effect-smol/effect@ad88856",
-    "minisearch": "^7.1.2",
+    "effect": "https://pkg.pr.new/Effect-TS/effect-smol/effect@fa86ef8",
+    "minisearch": "^7.2.0",
     "prettier": "^3.6.2",
     "remark-frontmatter": "^5.0.0",
     "remark-parse": "^11.0.0",
     "remark-parse-frontmatter": "^1.0.3",
     "remark-stringify": "^11.0.0",
     "tsup": "^8.5.0",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
     "unified": "^11.0.5"
   },
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac",
-  "dependencies": {}
+  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
 }
