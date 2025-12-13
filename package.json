@@ -1,5 +1,6 @@
 {
   "name": "effect-mcp",
+  "mcpName": "effect-mcp",
   "version": "0.1.16",
   "type": "module",
   "publishConfig": {

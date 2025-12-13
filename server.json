@@ -1,0 +1,15 @@
+{
+  "name": "effect-mcp",
+  "namespace": "io.github.tim-smart",
+  "displayName": "Effect MCP Server",
+  "description": "MCP server that provides tools and resources for accessing Effect documentation",
+  "repository": "https://github.com/tim-smart/effect-mcp",
+  "deployment": {
+    "packages": [
+      {
+        "type": "npm",
+        "identifier": "effect-mcp"
+      }
+    ]
+  }
+}
