@@ -14,6 +14,7 @@ RUN pnpm prune --prod
 
 
 FROM base AS runner
+LABEL io.modelcontextprotocol.server.name="io.github.tim-smart/effect-mcp"
 COPY package.json ./
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
