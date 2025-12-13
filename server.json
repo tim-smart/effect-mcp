@@ -1,15 +1,13 @@
 {
-  "name": "effect-mcp",
-  "namespace": "io.github.tim-smart",
-  "displayName": "Effect MCP Server",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.tim-smart/effect-mcp",
   "description": "MCP server that provides tools and resources for accessing Effect documentation",
-  "repository": "https://github.com/tim-smart/effect-mcp",
-  "deployment": {
-    "packages": [
-      {
-        "type": "npm",
-        "identifier": "effect-mcp"
-      }
-    ]
-  }
+  "version": "0.1.16",
+  "packages": [
+    {
+      "registry_type": "npm",
+      "identifier": "effect-mcp",
+      "version": "0.1.16"
+    }
+  ]
 }
