@@ -12,7 +12,7 @@ type NodeWithChildren = Node & {
   children: Array<NodeWithChildren>
 }
 
-export class Markdown extends ServiceMap.Key<Markdown>()("Markdown", {
+export class Markdown extends ServiceMap.Service<Markdown>()("Markdown", {
   make: Effect.gen(function* () {
     const processor = unified()
       .use(remarkParse)

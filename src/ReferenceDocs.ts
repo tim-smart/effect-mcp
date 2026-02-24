@@ -1,10 +1,18 @@
 import { NodeHttpClient, NodePath } from "@effect/platform-node"
-import { Cache, Duration, Effect, Exit, Layer, pipe, Schedule } from "effect"
-import { Array } from "effect/collections"
-import { Option } from "effect/data"
-import { Path } from "effect/platform"
-import { Schema } from "effect/schema"
-import { AiTool, AiToolkit, McpServer } from "effect/unstable/ai"
+import {
+  Array,
+  Cache,
+  Duration,
+  Effect,
+  Exit,
+  Layer,
+  Option,
+  Path,
+  pipe,
+  Schedule,
+  Schema,
+} from "effect"
+import { Tool, Toolkit, McpServer } from "effect/unstable/ai"
 import { HttpClient, HttpClientResponse } from "effect/unstable/http"
 import Minisearch from "minisearch"
 import * as Prettier from "prettier"
@@ -32,39 +40,39 @@ const SearchResult = Schema.Struct({
   description: "A search result from the Effect reference documentation.",
 })
 
-const toolkit = AiToolkit.make(
-  AiTool.make("effect_docs_search", {
+const toolkit = Toolkit.make(
+  Tool.make("effect_docs_search", {
     description:
       "Searches the Effect documentation. Result content can be accessed with the `get_effect_doc` tool.",
-    parameters: {
+    parameters: Schema.Struct({
       query: Schema.String.annotate({
         description: "The search query to look for in the documentation.",
       }),
-    },
+    }),
     success: Schema.Struct({
       results: Schema.Array(SearchResult),
     }),
   })
-    .annotate(AiTool.Readonly, true)
-    .annotate(AiTool.Destructive, false),
+    .annotate(Tool.Readonly, true)
+    .annotate(Tool.Destructive, false),
 
-  AiTool.make("get_effect_doc", {
+  Tool.make("get_effect_doc", {
     description:
       "Get the Effect documentation for a documentId. The content might be paginated. Use the `page` parameter to specify which page to retrieve.",
-    parameters: {
+    parameters: Schema.Struct({
       documentId,
       page: Schema.optional(Schema.Number).annotate({
         description: "The page number to retrieve for the document content.",
       }),
-    },
+    }),
     success: Schema.Struct({
       content: Schema.String,
       page: Schema.Number,
       totalPages: Schema.Number,
     }),
   })
-    .annotate(AiTool.Readonly, true)
-    .annotate(AiTool.Destructive, false),
+    .annotate(Tool.Readonly, true)
+    .annotate(Tool.Destructive, false),
 )
 
 interface DocumentEntry {
@@ -290,7 +298,7 @@ class DocEntry extends Schema.Class<DocEntry>("DocEntry")({
   }
 
   get asMarkdown(): Effect.Effect<string> {
-    return Effect.gen(this, function* () {
+    return Effect.gen({ self: this }, function* () {
       let description = Option.getOrElse(this.description, () => "")
 
       if (Option.isSome(this.signature)) {

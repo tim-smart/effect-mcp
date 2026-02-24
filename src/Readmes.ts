@@ -1,6 +1,5 @@
 import { NodeHttpClient } from "@effect/platform-node"
-import { Effect, Layer, Schedule } from "effect"
-import { Array } from "effect/collections"
+import { Array, Effect, Layer, Schedule } from "effect"
 import { McpServer } from "effect/unstable/ai"
 import { HttpClient } from "effect/unstable/http"
 
